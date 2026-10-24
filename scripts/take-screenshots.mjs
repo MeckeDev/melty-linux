@@ -32,12 +32,12 @@ async function goTab(tab) {
 
 // Library
 await goTab('games');
-await page.screenshot({ path: join(out, 'library.png'), fullPage: false });
+await page.screenshot({ path: join(out, 'library.jpg'), type: 'jpeg', quality: 90, fullPage: false });
 
 // Mashup Browser
 await goTab('mashups');
 await page.waitForTimeout(1000);
-await page.screenshot({ path: join(out, 'mashup-browser.png'), fullPage: false });
+await page.screenshot({ path: join(out, 'mashup-browser.jpg'), type: 'jpeg', quality: 90, fullPage: false });
 
 // Mashup Details - try to click first mashup card if exists
 await goTab('mashups');
@@ -48,7 +48,7 @@ const clicked = await page.evaluate(() => {
   return false;
 });
 await page.waitForTimeout(1200);
-await page.screenshot({ path: join(out, 'mashup-details.png'), fullPage: false });
+await page.screenshot({ path: join(out, 'mashup-details.jpg'), type: 'jpeg', quality: 90, fullPage: false });
 // Close details if possible
 await page.evaluate(() => {
   const close = document.querySelector('#mashup-detail .close, .detail-close, [aria-label="Close"]');
@@ -59,17 +59,17 @@ await page.waitForTimeout(500);
 // Installed
 await goTab('installed');
 await page.waitForTimeout(800);
-await page.screenshot({ path: join(out, 'installed.png'), fullPage: false });
+await page.screenshot({ path: join(out, 'installed.jpg'), type: 'jpeg', quality: 90, fullPage: false });
 
 // Settings
 await goTab('settings');
 await page.waitForTimeout(800);
-await page.screenshot({ path: join(out, 'settings.png'), fullPage: false });
+await page.screenshot({ path: join(out, 'settings.jpg'), type: 'jpeg', quality: 90, fullPage: false });
 
 // Diagnostics
 await goTab('diagnostics');
 await page.waitForTimeout(800);
-await page.screenshot({ path: join(out, 'diagnostics.png'), fullPage: false });
+await page.screenshot({ path: join(out, 'diagnostics.jpg'), type: 'jpeg', quality: 90, fullPage: false });
 
 await browser.close();
 console.log('Screenshots saved to', out);

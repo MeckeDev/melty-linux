@@ -2,13 +2,6 @@ name: Generate Screenshots
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'ui/**'
-      - 'scripts/**'
-      - '.github/workflows/screenshots.yml'
 
 permissions:
   contents: write
@@ -38,6 +31,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add screenshots/*.png
+          git add screenshots/*.jpg
           git diff --cached --quiet || git commit -m "chore: update screenshots [skip ci]"
           git push
