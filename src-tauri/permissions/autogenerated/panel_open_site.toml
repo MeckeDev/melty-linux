@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-panel-open-site"
+description = "Enables the panel_open_site command without any pre-configured scope."
+commands.allow = ["panel_open_site"]
+
+[[permission]]
+identifier = "deny-panel-open-site"
+description = "Denies the panel_open_site command without any pre-configured scope."
+commands.deny = ["panel_open_site"]

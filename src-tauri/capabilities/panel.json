@@ -1,0 +1,35 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "panel",
+  "description": "Natives Panel (lokale Seite ui/panel.html): eigene Befehle, kein Zugriff für melty.gg",
+  "windows": [
+    "panel"
+  ],
+  "local": true,
+  "permissions": [
+    "allow-panel-state",
+    "allow-panel-set",
+    "allow-panel-launch",
+    "allow-panel-reveal",
+    "allow-panel-open-site",
+    "allow-panel-restart",
+    "allow-mashups-search",
+    "allow-mashups-refresh",
+    "allow-mashups-detail",
+    "allow-mashups-open",
+    "allow-account-status",
+    "allow-account-login",
+    "allow-account-logout",
+    "allow-mods-state",
+    "allow-mods-library",
+    "allow-mods-install",
+    "allow-mods-uninstall",
+    "allow-mods-set-enabled",
+    "allow-mods-set-game-copy",
+    "allow-mods-pick-game-folder",
+    "allow-mods-launch",
+    "allow-mods-stop",
+    "allow-mods-open-folder",
+    "allow-mods-clear-jobs"
+  ]
+}

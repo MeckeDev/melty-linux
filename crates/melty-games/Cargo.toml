@@ -1,0 +1,16 @@
+[package]
+name = "melty-games"
+version = "0.1.0"
+edition = "2021"
+description = "Spiele-Erkennung für Melty-Linux: Steam (nativ/Flatpak/Snap), Proton-Prefixe, laufende Prozesse. Ersetzt windows-inspector.exe."
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+rusqlite = { version = "0.32", features = ["bundled"] }
+url = "2"
+
+[[bin]]
+name = "melty-games"
+path = "src/main.rs"

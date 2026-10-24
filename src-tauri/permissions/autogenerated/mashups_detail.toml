@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-mashups-detail"
+description = "Enables the mashups_detail command without any pre-configured scope."
+commands.allow = ["mashups_detail"]
+
+[[permission]]
+identifier = "deny-mashups-detail"
+description = "Denies the mashups_detail command without any pre-configured scope."
+commands.deny = ["mashups_detail"]

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-mods-stop"
+description = "Enables the mods_stop command without any pre-configured scope."
+commands.allow = ["mods_stop"]
+
+[[permission]]
+identifier = "deny-mods-stop"
+description = "Denies the mods_stop command without any pre-configured scope."
+commands.deny = ["mods_stop"]

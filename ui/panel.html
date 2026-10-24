@@ -1,0 +1,1657 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Melty Linux</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #141414; --panel: #1b1b1b; --card: #212121; --line: #2c2c2c; --text: #f2f2f2; --muted: #a6a6a6;
+        --accent: #008cfd; --accent-hover: #1f98ff; --ok: #35c46a; --warn: #f0b429; --bad: #ef5350;
+        --font: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-family: var(--font);
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+      body { display: grid; grid-template-columns: 220px 1fr; }
+      aside { background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 20px 14px; gap: 6px; }
+      aside img { width: 120px; margin: 4px 8px 18px; display: block; }
+      nav { display: grid; gap: 4px; }
+      nav button { all: unset; cursor: pointer; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+      nav button:hover { background: var(--card); color: var(--text); }
+      nav button[aria-current="page"] { background: var(--card); color: var(--text); }
+      nav .count { font-size: 12px; font-weight: 600; background: var(--line); color: var(--muted); padding: 1px 8px; border-radius: 999px; }
+      .grow { flex: 1; }
+      .site { all: unset; cursor: pointer; text-align: center; padding: 10px 12px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 14px; font-weight: 650; }
+      .site:hover { background: var(--accent-hover); }
+      .ver { color: var(--muted); font-size: 12px; text-align: center; margin-top: 10px; }
+      main { overflow-y: auto; padding: 28px 36px 40px; }
+      h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.01em; }
+      .sub { margin: 0 0 22px; color: var(--muted); font-size: 14px; line-height: 1.5; max-width: 62ch; }
+      .row-head { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+      input[type="search"] { flex: 1; min-width: 220px; max-width: 360px; background: var(--card); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 9px 12px; font: inherit; font-size: 14px; outline: none; }
+      input[type="search"]:focus, select:focus { border-color: var(--accent); }
+      select { background: var(--card); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 9px 12px; font: inherit; font-size: 13px; outline: none; max-width: 240px; }
+      label.check { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; }
+      label.check input { accent-color: var(--accent); }
+      .meta { color: var(--muted); font-size: 12.5px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+      .games { display: grid; gap: 10px; }
+      .game { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; align-items: center; }
+      .game h3 { margin: 0; font-size: 15px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .path { grid-column: 1; color: var(--muted); font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .actions { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: 8px; }
+      .pill { font-size: 11px; font-weight: 700; letter-spacing: 0.02em; padding: 2px 8px; border-radius: 999px; background: var(--line); color: var(--muted); }
+      .pill.run { background: rgba(53, 196, 106, 0.16); color: var(--ok); }
+      .pill.proton { background: rgba(0, 140, 253, 0.16); color: #5fb4ff; }
+      button.btn { all: unset; cursor: pointer; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 650; background: var(--line); color: var(--text); white-space: nowrap; }
+      button.btn:hover { background: #383838; }
+      button.btn.primary { background: var(--accent); color: #fff; }
+      button.btn.primary:hover { background: var(--accent-hover); }
+      button.btn:disabled { opacity: 0.5; cursor: default; }
+      .empty { background: var(--card); border: 1px dashed var(--line); border-radius: 14px; padding: 26px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+      .group { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 18px; }
+      .group > h2 { margin: 0; padding: 14px 18px 4px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+      .setting { display: grid; grid-template-columns: 1fr auto; gap: 4px 20px; align-items: center; padding: 14px 18px; border-top: 1px solid var(--line); }
+      .group > h2 + .setting { border-top: 0; }
+      .setting b { font-size: 14px; }
+      .setting small { grid-column: 1; color: var(--muted); font-size: 13px; line-height: 1.45; }
+      .seg { display: inline-flex; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; grid-column: 2; grid-row: 1 / span 2; }
+      .seg button { all: unset; cursor: pointer; padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); }
+      .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+      .switch { grid-column: 2; grid-row: 1 / span 2; width: 42px; height: 24px; border-radius: 999px; background: var(--line); position: relative; cursor: pointer; border: 0; padding: 0; }
+      .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.12s; }
+      .switch[aria-checked="true"] { background: var(--accent); }
+      .switch[aria-checked="true"]::after { transform: translateX(18px); }
+      .banner { display: flex; align-items: center; gap: 12px; background: rgba(240, 180, 41, 0.12); border: 1px solid rgba(240, 180, 41, 0.35); color: #f6d27a; border-radius: 12px; padding: 10px 14px; font-size: 13px; margin-bottom: 18px; }
+      .banner.bad { background: rgba(239, 83, 80, 0.12); border-color: rgba(239, 83, 80, 0.35); color: #ff9c99; }
+      .banner .grow { flex: 1; }
+      table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      td { padding: 9px 18px; border-top: 1px solid var(--line); vertical-align: top; }
+      tr:first-child td { border-top: 0; }
+      td:first-child { color: var(--muted); width: 190px; white-space: nowrap; }
+      td:last-child { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; }
+      .bad { color: var(--bad); }
+      .ok { color: var(--ok); }
+      [hidden] { display: none !important; }
+
+      /* Mashups */
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+      .grid.compact { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+      .grid.cozy { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+      .list { display: grid; gap: 10px; }
+      .list .card { flex-direction: row; align-items: center; }
+      .list .card .cover { width: 160px; aspect-ratio: 16/10; height: 100%; flex-shrink: 0; }
+      .list .card .body { flex: 1; grid-template-columns: 1fr auto; align-items: center; }
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; text-align: left; padding: 0; color: var(--text); font: inherit; display: flex; flex-direction: column; contain: layout paint style; }
+      .card:hover { border-color: #3c3c3c; background: #262626; }
+      .card .cover { aspect-ratio: 16 / 10; width: 100%; object-fit: cover; display: block; background: linear-gradient(135deg, #242424, #1a1a1a); will-change: transform; }
+      .card .body { padding: 12px 14px 14px; display: grid; gap: 5px; }
+      .card h3 { margin: 0; font-size: 14.5px; line-height: 1.3; }
+      .card .by { color: var(--muted); font-size: 12.5px; }
+      .card .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+      .card .tag { font-size: 11px; font-weight: 650; background: var(--line); color: var(--muted); border-radius: 999px; padding: 2px 8px; }
+      .card .meta-row { display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: 12px; flex-wrap: wrap; }
+      .footer-row { display: flex; justify-content: center; margin-top: 20px; }
+      .detail-cover { width: 100%; max-height: 340px; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); margin-bottom: 18px; background: var(--card); }
+      .detail h1 { font-size: 26px; }
+      .detail .by { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+      .detail .desc { color: #d8d8d8; font-size: 14px; line-height: 1.65; max-width: 78ch; }
+      .detail .desc p { margin: 0 0 13px; }
+      .detail .desc h1, .detail .desc h2, .detail .desc h3, .detail .desc h4 { color: var(--text); margin: 20px 0 8px; line-height: 1.3; }
+      .detail .desc h1 { font-size: 21px; }
+      .detail .desc h2 { font-size: 18px; }
+      .detail .desc h3 { font-size: 16px; }
+      .detail .desc h4 { font-size: 14.5px; }
+      .detail .desc ul, .detail .desc ol { margin: 0 0 13px; padding-left: 22px; }
+      .detail .desc li { margin: 3px 0; }
+      .detail .desc code { background: var(--line); border-radius: 5px; padding: 1px 5px; font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .detail .desc pre { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; margin: 0 0 14px; }
+      .detail .desc pre code { background: none; padding: 0; }
+      .detail .desc a { color: #5fb4ff; }
+      .detail .desc img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); margin: 8px 0 14px; }
+      .detail .desc blockquote { border-left: 3px solid var(--line); margin: 0 0 13px; padding-left: 14px; color: var(--muted); }
+      .detail .stats { display: flex; gap: 18px; flex-wrap: wrap; color: var(--muted); font-size: 13px; margin: 14px 0 18px; }
+      .detail .stats b { color: var(--text); }
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 18px; }
+      .chips .chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; font-size: 12.5px; color: var(--text); }
+      .media-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 16px 0 20px; }
+      .media-gallery .media-item { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--card); }
+      .media-gallery .media-item img, .media-gallery .media-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .media-gallery .media-item video { background: #000; }
+      .detail-header { display: grid; gap: 10px; margin: 6px 0 16px; }
+      .detail-title-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+      .detail-title { margin: 0; font-size: 28px; letter-spacing: -0.01em; }
+      .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 24px; }
+      .lightbox.open { display: flex; }
+      .lightbox-inner { position: relative; max-width: 95vw; max-height: 95vh; display: flex; align-items: center; justify-content: center; }
+      .lightbox-media { max-width: 95vw; max-height: 95vh; border-radius: 12px; border: 1px solid var(--line); background: #000; }
+      .lightbox-close { position: absolute; top: -38px; right: 0; all: unset; cursor: pointer; color: #fff; font-size: 28px; line-height: 1; padding: 4px 10px; }
+      .lightbox-close:hover { color: #ccc; }
+      .media-gallery .media-item.clickable { cursor: zoom-in; }
+      .detail-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.02em; padding: 2px 8px; border-radius: 999px; background: var(--line); color: var(--muted); text-transform: uppercase; }
+      .detail-badge.live { background: rgba(53, 196, 106, 0.16); color: var(--ok); }
+      .detail-badge.free { background: rgba(0, 140, 253, 0.16); color: #5fb4ff; }
+      .detail-badge.paid { background: rgba(240, 180, 41, 0.16); color: #f6d27a; }
+      .detail-creator { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; }
+      .detail-creator .avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); background: var(--card); }
+      .detail-creator a { color: var(--text); text-decoration: none; font-weight: 600; }
+      .detail-creator a:hover { text-decoration: underline; }
+      .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: start; }
+      @media (max-width: 1080px) { .detail-grid { grid-template-columns: 1fr; } }
+      .detail-main { display: grid; gap: 16px; }
+      .detail-side { display: grid; gap: 14px; }
+      .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+      .panel-header { padding: 12px 16px 6px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+      .panel-body { display: grid; gap: 10px; padding: 6px 16px 14px; font-size: 13.5px; }
+      .kv { display: grid; grid-template-columns: 140px 1fr; gap: 10px; align-items: start; }
+      .kv .k { color: var(--muted); }
+      .kv .v { color: var(--text); word-break: break-word; }
+      .taglist { display: flex; gap: 6px; flex-wrap: wrap; }
+      .tagpill { font-size: 11px; font-weight: 650; background: var(--line); color: var(--muted); border-radius: 999px; padding: 2px 8px; }
+      .linklist { display: grid; gap: 6px; }
+      .linklist a { color: #5fb4ff; text-decoration: none; font-size: 13.5px; }
+      .linklist a:hover { text-decoration: underline; }
+      .section-title { margin: 10px 0 6px; font-size: 16px; }
+      .spinner { color: var(--muted); font-size: 13px; padding: 18px 0; }
+      .back { all: unset; cursor: pointer; color: var(--accent); font-size: 13.5px; font-weight: 650; display: inline-flex; gap: 6px; align-items: center; margin-bottom: 14px; }
+      .back:hover { color: var(--accent-hover); }
+
+      /* Konto und installierte Mashups */
+      .account { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; display: grid; gap: 7px; font-size: 12.5px; }
+      .account .who { font-weight: 650; }
+      .account .hint { color: var(--muted); line-height: 1.45; }
+      .account .err { color: #ff9c99; line-height: 1.45; }
+      .account button { all: unset; cursor: pointer; text-align: center; padding: 7px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 650; background: var(--line); color: var(--text); }
+      .account button:hover { background: #383838; }
+      .account button.primary { background: var(--accent); color: #fff; }
+      .account button.primary:hover { background: var(--accent-hover); }
+      .job { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; margin-bottom: 8px; display: grid; gap: 6px; font-size: 13px; }
+      .job .job-head { display: flex; gap: 10px; align-items: center; }
+      .job .job-head .grow { flex: 1; }
+      .job .bar { height: 5px; border-radius: 999px; background: var(--line); overflow: hidden; }
+      .job .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: inherit; transition: width 0.25s; }
+      .job.bad { border-color: rgba(239, 83, 80, 0.45); }
+      .job small { color: var(--muted); }
+      .installed-game { align-items: start; }
+      .installed-game h3 { line-height: 1.35; }
+      .installed-game h3 .name { all: unset; cursor: pointer; }
+      .installed-game h3 .name:hover { text-decoration: underline; }
+      .installed-game h3 .name:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+      .installed-game .version { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+      .installed-game .actions { flex-wrap: wrap; justify-content: flex-end; max-width: 360px; }
+    </style>
+  </head>
+  <body>
+    <div id="lightbox" class="lightbox">
+      <div class="lightbox-inner">
+        <button class="lightbox-close" id="lightbox-close" aria-label="Close">×</button>
+        <img id="lightbox-img" class="lightbox-media" hidden />
+        <video id="lightbox-vid" class="lightbox-media" controls playsInline hidden></video>
+      </div>
+    </div>
+    <aside>
+      <img src="wordmark.png" alt="Melty" draggable="false" />
+      <nav>
+        <button data-tab="games">Library <span class="count" id="count">0</span></button>
+        <button data-tab="mashups">Mashups</button>
+        <button data-tab="installed">Installed <span class="count" id="icount">0</span></button>
+        <button data-tab="settings">Settings</button>
+        <button data-tab="diagnostics">Diagnostics</button>
+      </nav>
+      <div class="grow"></div>
+      <div class="account" id="account"></div>
+      <button class="site" id="site">Open Melty</button>
+      <div class="ver" id="ver"></div>
+    </aside>
+    <main>
+      <div id="toast" style="position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:999px; padding:8px 16px; font-size:13px; display:none; z-index:2000; box-shadow:0 10px 30px rgba(0,0,0,0.4);"></div>
+      <section id="games" hidden>
+        <h1>Library</h1>
+        <p class="sub">Games found on this computer. Steam (native, Flatpak, Snap), Lutris, Heroic and Faugus Launcher are detected automatically; the list updates by itself.</p>
+        <div class="row-head"><input type="search" id="filter" placeholder="Filter games…" aria-label="Filter games" /></div>
+        <div class="games" id="list"></div>
+      </section>
+
+      <section id="mashups" hidden>
+        <div id="mashup-list">
+          <h1>Mashups</h1>
+          <p class="sub">Browse everything published on melty.gg. Filter and sort locally; the catalogue is cached for an hour.</p>
+          <div class="row-head">
+            <input type="search" id="mq" placeholder="Search mashups, creators, games…" aria-label="Search mashups" />
+            <select id="msort" aria-label="Sort mashups">
+              <option value="top">Most installed</option>
+              <option value="new">Newest</option>
+              <option value="updated">Recently updated</option>
+              <option value="rating">Best rated</option>
+              <option value="name">Name A–Z</option>
+            </select>
+            <select id="mgame" aria-label="Filter by game"><option value="">All games</option></select>
+            <input type="range" id="mminstars" min="0" max="5" step="0.5" value="0" style="width:120px" title="Minimum rating" />
+            <span class="meta" id="mstars" style="min-width:40px">Any ★</span>
+            <select id="mview" aria-label="View mode">
+              <option value="grid">Grid</option>
+              <option value="cozy">Cozy</option>
+              <option value="compact">Compact</option>
+              <option value="list">List</option>
+            </select>
+            <label class="check"><input type="checkbox" id="minstalled" /> Only installed games</label>
+            <span class="grow"></span>
+            <span class="meta" id="mmeta"></span>
+            <button class="btn" id="mrefresh" title="Reload the catalogue">Refresh</button>
+          </div>
+          <div class="banner bad" id="merror" hidden><span class="grow" id="merror-text"></span></div>
+          <div id="mcards" class="grid"></div>
+          <div id="mempty" class="empty" hidden>No mashups match these filters.</div>
+          <div class="footer-row"><button class="btn" id="mmore" hidden>Load more</button></div>
+          <div class="spinner" id="mloading" hidden>Loading mashups…</div>
+        </div>
+        <div id="mashup-detail" class="detail" hidden></div>
+      </section>
+
+      <section id="installed" hidden>
+        <h1>Installed mashups <span class="count" id="icount-inline"></span></h1>
+        <p class="sub">Everything this client installed, with a journal of every file it touched. Play starts the game with the mashup; disabling moves only the mashup files aside until you enable it again.</p>
+        <div class="banner bad" id="i-error" hidden><span class="grow" id="i-error-text"></span></div>
+        <div id="jobs"></div>
+        <div class="games" id="installed-list"></div>
+      </section>
+
+      <section id="settings" hidden>
+        <h1>Settings</h1>
+        <p class="sub">Changes are saved immediately. Rendering options apply the next time Melty starts.</p>
+        <div class="banner" id="restart" hidden><span class="grow">Restart Melty to apply the changes to rendering.</span><button class="btn primary" id="restart-now">Restart now</button></div>
+        <div class="group">
+          <h2>General</h2>
+          <div class="setting"><b>When I sign in to this computer</b><small>Whether Melty starts automatically, and how.</small>
+            <div class="seg" data-key="startup"><button data-v="open">Open panel</button><button data-v="tray">Start in tray</button><button data-v="off">Don't start</button></div></div>
+          <div class="setting"><b>Desktop notifications</b><small>Lets Melty show notifications for things you started.</small>
+            <button class="switch" role="switch" data-key="notifications" aria-label="Desktop notifications"></button></div>
+        </div>
+        <div class="group">
+          <h2>Rendering</h2>
+          <div class="setting"><b>Work around blank window (NVIDIA)</b><small>Turns off WebKit's DMABUF renderer. “Auto” does this only when an NVIDIA driver is present.</small>
+            <div class="seg" data-key="gpu" data-restart="1"><button data-v="auto">Auto</button><button data-v="on">Always</button><button data-v="off">Never</button></div></div>
+          <div class="setting"><b>Use X11 (XWayland)</b><small>Runs Melty through XWayland instead of native Wayland. Try this if the window flickers or stays empty.</small>
+            <button class="switch" role="switch" data-key="forceX11" data-restart="1" aria-label="Use X11"></button></div>
+        </div>
+        <div class="group">
+          <h2>Appearance</h2>
+          <div class="setting"><b>Theme</b><small>Color scheme for the panel.</small>
+            <select id="theme">
+              <option value="dark">Dark</option>
+              <option value="midnight">Midnight</option>
+              <option value="amoled">AMOLED</option>
+              <option value="slate">Slate</option>
+              <option value="violet">Violet</option>
+              <option value="emerald">Emerald</option>
+            </select>
+          </div>
+          <div class="setting"><b>Accent color</b><small>Highlight color for buttons and links.</small>
+            <select id="accent">
+              <option value="#008cfd">Blue</option>
+              <option value="#a855f7">Purple</option>
+              <option value="#22d3ee">Cyan</option>
+              <option value="#22c55e">Green</option>
+              <option value="#f59e0b">Orange</option>
+              <option value="#ef4444">Red</option>
+              <option value="#f472b6">Pink</option>
+            </select>
+          </div>
+          <div class="setting"><b>Font</b><small>Interface font family.</small>
+            <select id="font">
+              <option value="Inter, system-ui, -apple-system, 'Segoe UI', sans-serif">Inter</option>
+              <option value="system-ui, -apple-system, 'Segoe UI', sans-serif">System</option>
+              <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+              <option value="'Fira Code', monospace">Fira Code</option>
+              <option value="'Iosevka', monospace">Iosevka</option>
+            </select>
+          </div>
+          <div class="setting"><b>Default mashup view</b><small>Layout used when opening the Mashups tab.</small>
+            <select id="defview">
+              <option value="grid">Grid</option>
+              <option value="cozy">Cozy</option>
+              <option value="compact">Compact</option>
+              <option value="list">List</option>
+            </select>
+          </div>
+          <div class="setting"><b>Reduce animations</b><small>Less motion for a snappier feel.</small>
+            <button class="switch" role="switch" id="reduceMotion" aria-label="Reduce animations"></button></div>
+          <div class="setting"><b>Show quick stats</b><small>Display installs and rating on cards.</small>
+            <button class="switch" role="switch" id="quickStats" aria-label="Show quick stats"></button></div>
+        </div>
+        <div class="group">
+          <h2>Behavior</h2>
+          <div class="setting"><b>Auto refresh catalogue</b><small>Refresh mashups catalogue when opening the tab if stale.</small>
+            <button class="switch" role="switch" id="autoRefresh" aria-label="Auto refresh catalogue"></button></div>
+          <div class="setting"><b>Remember last mashup tab</b><small>Stay on the same subview when switching tabs.</small>
+            <button class="switch" role="switch" id="rememberTab" aria-label="Remember last tab"></button></div>
+          <div class="setting"><b>Clear caches</b><small>Clear image cache and reload mashups catalogue.</small>
+            <button class="btn" id="clearCaches">Clear cache</button></div>
+        </div>
+      </section>
+
+      <section id="diagnostics" hidden>
+        <h1>Diagnostics</h1>
+        <p class="sub">Useful when something does not work. “Copy report” puts everything below on the clipboard.</p>
+        <div class="row-head"><button class="btn primary" id="copy">Copy report</button><span id="copied" class="ok" hidden>Copied</span></div>
+        <div class="group"><h2>Client</h2><table id="t-app"></table></div>
+        <div class="group"><h2>Session</h2><table id="t-env"></table></div>
+        <div class="group"><h2>Game detection</h2><table id="t-det"></table></div>
+      </section>
+    </main>
+
+    <script>
+      const invoke = (cmd, args) => window.__TAURI_INTERNALS__.invoke(cmd, args || {});
+      const $ = (s, r = document) => r.querySelector(s);
+      const TABS = ["games", "mashups", "installed", "settings", "diagnostics"];
+      let state = null, tab = "games";
+
+      const lightbox = $("#lightbox");
+      const lbImg = $("#lightbox-img");
+      const lbVid = $("#lightbox-vid");
+      const lbClose = $("#lightbox-close");
+      function openLightbox(url, isVideo) {
+        if (isVideo) {
+          lbImg.hidden = true;
+          lbVid.hidden = false;
+          lbVid.src = url;
+          lbVid.currentTime = 0;
+          try { lbVid.play().catch(() => {}); } catch {}
+        } else {
+          lbVid.pause();
+          lbVid.removeAttribute("src");
+          lbVid.load();
+          lbVid.hidden = true;
+          lbImg.hidden = false;
+          lbImg.src = url;
+        }
+        lightbox.classList.add("open");
+      }
+      function closeLightbox() {
+        lightbox.classList.remove("open");
+        lbVid.pause();
+        lbVid.removeAttribute("src");
+        lbVid.load();
+        lbImg.removeAttribute("src");
+      }
+      lbClose.onclick = closeLightbox;
+      lightbox.onclick = (e) => { if (e.target === lightbox) closeLightbox(); };
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLightbox(); });
+
+      const el = (tag, props = {}, ...kids) => {
+        const n = Object.assign(document.createElement(tag), props);
+        for (const k of kids) n.append(k);
+        return n;
+      };
+      const num = (n) => Number(n || 0).toLocaleString();
+
+      function setTab(next) {
+        tab = TABS.includes(next) ? next : "games";
+        for (const t of TABS) $("#" + t).hidden = t !== tab;
+        for (const b of document.querySelectorAll("nav button")) {
+          if (b.dataset.tab === tab) b.setAttribute("aria-current", "page");
+          else b.removeAttribute("aria-current");
+        }
+        history.replaceState(null, "", "?tab=" + tab);
+        if (localStorage.getItem("rememberTab") !== "0") localStorage.setItem("lastTab", tab);
+        if (tab === "mashups") {
+          if (localStorage.getItem("autoRefresh") !== "0" && (!mashups.loaded || (mashups.catalog && mashups.catalog.stale))) {
+            reloadMashups();
+          } else if (!mashups.loaded) {
+            reloadMashups();
+          }
+        }
+        if (tab === "installed" && state?.account?.signedIn) loadLibrary(false);
+      }
+      window.__setTab = setTab;
+
+      function mediaUrl(path) {
+        if (!path) return null;
+        if (/^https?:\/\//i.test(path)) return path;
+        const base = state.app.webBase.replace(/\/$/, "");
+        return base + (path.startsWith("/") ? path : "/" + path);
+      }
+
+      function renderGames() {
+        const q = $("#filter").value.trim().toLowerCase();
+        const list = $("#list");
+        list.replaceChildren();
+        const games = (state.games || []).filter((g) => !q || g.name.toLowerCase().includes(q));
+        $("#count").textContent = state.games.length;
+        if (!games.length) {
+          const d = state.detection;
+          const box = el("div", { className: "empty" });
+          box.append(state.games.length ? "No games match your filter." : "No games found yet. Melty looks in Steam, Lutris, Heroic and Faugus Launcher.");
+          if (!state.games.length && d.problems.length) box.append(el("br"), el("span", { className: "bad" }, "Some locations could not be read, see Diagnostics."));
+          list.append(box);
+          return;
+        }
+        for (const g of games) {
+          const title = el("h3", {}, g.name);
+          if (g.running) title.append(el("span", { className: "pill run" }, "Running"));
+          if (g.protonPrefix) title.append(el("span", { className: "pill proton", title: g.protonPrefix }, "Proton"));
+          title.append(el("span", { className: "pill" }, g.launcher));
+          const launch = el("button", { className: "btn primary", textContent: g.running ? "Open" : "Launch" });
+          launch.onclick = () => invoke("panel_launch", { installationId: g.installationId }).catch((e) => alert(String(e)));
+          const folder = el("button", { className: "btn", textContent: "Folder" });
+          folder.onclick = () => invoke("panel_reveal", { installationId: g.installationId }).catch((e) => alert(String(e)));
+          list.append(el("div", { className: "game" }, title, el("div", { className: "path", textContent: g.installDir, title: g.installDir }), el("div", { className: "actions" }, launch, folder)));
+        }
+      }
+
+      function applyTheme() {
+        const theme = localStorage.getItem("theme") || "dark";
+        const accent = localStorage.getItem("accent") || "#008cfd";
+        const font = localStorage.getItem("font") || "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif";
+        const root = document.documentElement;
+        root.style.setProperty("--accent", accent);
+        root.style.setProperty("--accent-hover", accent);
+        root.style.setProperty("--font", font);
+        root.style.fontFamily = font;
+        if (theme === "midnight") { root.style.setProperty("--bg","#0f1026"); root.style.setProperty("--panel","#15182b"); root.style.setProperty("--card","#1d2140"); root.style.setProperty("--line","#2a2f5a"); root.style.setProperty("--text","#f4f6ff"); root.style.setProperty("--muted","#b9bce6"); }
+        else if (theme === "amoled") { root.style.setProperty("--bg","#000000"); root.style.setProperty("--panel","#000000"); root.style.setProperty("--card","#050505"); root.style.setProperty("--line","#1a1a1a"); root.style.setProperty("--text","#ffffff"); root.style.setProperty("--muted","#9b9b9b"); }
+        else if (theme === "slate") { root.style.setProperty("--bg","#0f172a"); root.style.setProperty("--panel","#111827"); root.style.setProperty("--card","#1f2937"); root.style.setProperty("--line","#334155"); root.style.setProperty("--text","#e5e7eb"); root.style.setProperty("--muted","#9ca3af"); }
+        else if (theme === "violet") { root.style.setProperty("--bg","#120b1f"); root.style.setProperty("--panel","#171022"); root.style.setProperty("--card","#221733"); root.style.setProperty("--line","#35244f"); root.style.setProperty("--text","#f5f3ff"); root.style.setProperty("--muted","#c4b5fd"); }
+        else if (theme === "emerald") { root.style.setProperty("--bg","#0b1612"); root.style.setProperty("--panel","#0f1f19"); root.style.setProperty("--card","#142823"); root.style.setProperty("--line","#264a3b"); root.style.setProperty("--text","#ecfdf5"); root.style.setProperty("--muted","#86efac"); }
+        else { root.style.setProperty("--bg","#141414"); root.style.setProperty("--panel","#1b1b1b"); root.style.setProperty("--card","#212121"); root.style.setProperty("--line","#2c2c2c"); root.style.setProperty("--text","#f2f2f2"); root.style.setProperty("--muted","#a6a6a6"); }
+      }
+
+      function renderSettings() {
+        const s = state.settings || {};
+        for (const seg of document.querySelectorAll(".seg")) for (const b of seg.children) b.setAttribute("aria-pressed", String(s[seg.dataset.key] === b.dataset.v));
+        for (const sw of document.querySelectorAll(".switch")) {
+          if (sw.dataset.key) sw.setAttribute("aria-checked", String(Boolean(s[sw.dataset.key])));
+        }
+        const defv = localStorage.getItem("mashupView") || "grid";
+        const dv = $("#defview");
+        if (dv) dv.value = defv;
+        $("#reduceMotion").setAttribute("aria-checked", localStorage.getItem("reduceMotion") === "1" ? "true" : "false");
+        $("#autoRefresh").setAttribute("aria-checked", localStorage.getItem("autoRefresh") !== "0" ? "true" : "false");
+        $("#rememberTab").setAttribute("aria-checked", localStorage.getItem("rememberTab") !== "0" ? "true" : "false");
+        $("#quickStats").setAttribute("aria-checked", localStorage.getItem("quickStats") !== "0" ? "true" : "false");
+        $("#theme").value = localStorage.getItem("theme") || "dark";
+        $("#accent").value = localStorage.getItem("accent") || "#008cfd";
+        $("#font").value = localStorage.getItem("font") || "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif";
+        if (localStorage.getItem("reduceMotion") === "1") document.documentElement.style.setProperty("--trans", "none");
+        applyTheme();
+      }
+
+      const rows = (table, pairs) => {
+        table.replaceChildren(...pairs.map(([k, v]) => el("tr", {}, el("td", { textContent: k }), el("td", { textContent: v == null || v === "" ? "–" : String(v) }))));
+      };
+
+      function reportPairs() {
+        const a = state.app, e = state.env, d = state.detection;
+        return {
+          app: [["Version", a.version], ["Compatible with Melty app", a.compat], ["Website", a.webBase], ["Settings folder", a.configDir]],
+          env: [["Session type", e.sessionType], ["Wayland display", e.waylandDisplay], ["X display", e.display], ["Desktop", e.desktop], ["GDK_BACKEND", e.gdkBackend],
+                ["DMABUF renderer disabled", e.dmabufDisabled === "1" ? "yes" : "no"], ["NVIDIA driver", e.nvidiaDriver ? "present" : "not found"],
+                ["ZIP extraction", "built in"], ["7z/RAR helper", e.archiveTool || "not found (ZIP still works)"]],
+          det: [["State", d.state], ["Steam installs", d.roots.map((r) => `${r.path} (${r.flavor})`).join("\n")], ["Libraries", d.libraries.join("\n")],
+                ["Ignored tools (Proton, runtimes)", d.skippedTools], ["Games found", state.games.length], ["Problems", d.problems.length ? d.problems.join("\n") : "none"]],
+        };
+      }
+
+      function renderDiagnostics() {
+        const p = reportPairs();
+        rows($("#t-app"), p.app); rows($("#t-env"), p.env); rows($("#t-det"), p.det);
+      }
+
+      // ---------------------------------------------------------------- Mashups
+
+      const mashups = { loaded: false, loading: false, items: [], total: 0, offset: 0, text: "", sort: "top", game: "", installedOnly: false, minStars: 0, view: localStorage.getItem("mashupView") || "grid", facets: [], catalog: null, error: null, slug: null, detail: null, detailError: null, cache: new Map() };
+      let detailBack = "mashups";
+      const library = { loaded: false, loading: false, at: 0, signedIn: false, mods: [], error: null };
+      const knownActiveJobs = new Set();
+      let lastSignedIn = false;
+
+      function mashupCard(m) {
+        const card = el("button", { className: "card", type: "button" });
+        const cover = mediaUrl(m.coverUrl || m.cover || m.thumbnailUrl || m.image || m.banner || (Array.isArray(m.previewMedia) ? (typeof m.previewMedia[0]==="string"?m.previewMedia[0]:m.previewMedia[0]?.url||m.previewMedia[0]?.src) : null) || (Array.isArray(m.images)?(typeof m.images[0]==="string"?m.images[0]:m.images[0]?.url):null));
+        if (cover && !/\.(mp4|webm|ogg|mov)(\?|$)/i.test(cover)) {
+          const cached = mashups.cache.get(cover);
+          const img = document.createElement("img");
+          img.className = "cover";
+          img.alt = "";
+          img.loading = "lazy";
+          img.decoding = "async";
+          img.setAttribute("referrerpolicy", "no-referrer");
+          img.style.width = "100%";
+          img.style.aspectRatio = "16 / 10";
+          img.style.objectFit = "cover";
+          img.style.display = "block";
+          img.style.background = "linear-gradient(135deg, #242424, #1a1a1a)";
+          if (cached) {
+            img.src = cached;
+          } else {
+            img.src = cover;
+            img.onload = () => { try { mashups.cache.set(cover, img.currentSrc || img.src); } catch {} };
+          }
+          img.onerror = () => { img.style.display = "none"; };
+          card.append(img);
+        } else {
+          card.append(el("div", { className: "cover" }));
+        }
+        const tags = el("div", { className: "tags" });
+        for (const g of (m.games || []).slice(0, 3)) tags.append(el("span", { className: "tag" }, g.shortName || g.name || g.slug));
+        const body = el("div", { className: "body" },
+          el("h3", {}, m.title),
+          el("div", { className: "by" }, m.creator && m.creator.name ? "by " + m.creator.name : (m.madeBy || m.author || "")),
+          tags,
+        );
+        const meta = el("div", { className: "meta-row" });
+        if (localStorage.getItem("quickStats") !== "0") {
+          meta.append(el("span", {}, `${num(m.installs)} installs${m.stars ? ` · ★ ${Number(m.stars).toFixed(1)}` : ""}`));
+        }
+        meta.append(el("span", {}, "Free"));
+        body.append(meta);
+        card.append(body);
+        card.onclick = () => openDetail(m.slug);
+        return card;
+      }
+
+      function renderMashups() {
+        if (!state) return;
+        const cards = $("#mcards");
+        cards.className = mashups.view === "list" ? "list" : (mashups.view === "compact" ? "grid compact" : (mashups.view === "cozy" ? "grid cozy" : "grid"));
+        let items = mashups.items.slice();
+        const ms = Number(mashups.minStars || 0);
+        if (ms > 0) items = items.filter((m) => Number(m.stars || 0) >= ms);
+        const frag = document.createDocumentFragment();
+        for (const it of items) frag.appendChild(mashupCard(it));
+        cards.replaceChildren(frag);
+        $("#mempty").hidden = items.length > 0 || mashups.loading || Boolean(mashups.error);
+        $("#mloading").hidden = !mashups.loading;
+        $("#mmore").hidden = mashups.loading || mashups.items.length >= mashups.total;
+        $("#merror").hidden = !mashups.error;
+        $("#merror-text").textContent = mashups.error || "";
+        const c = mashups.catalog;
+        const age = c ? Math.max(0, Math.round(c.ageSeconds / 60)) : null;
+        $("#mmeta").textContent = c ? `${num(c.count)} mashups · updated ${age < 1 ? "just now" : age + " min ago"}${c.stale ? " (stale)" : ""}` : "";
+
+        const sel = $("#mgame");
+        const current = sel.value;
+        sel.replaceChildren(el("option", { value: "" }, "All games"));
+        for (const f of mashups.facets.slice(0, 200)) sel.append(el("option", { value: f.slug }, `${f.shortName || f.name} (${f.count})`));
+        sel.value = [...sel.options].some((o) => o.value === current) ? current : mashups.game;
+      }
+
+      async function loadMashups(reset) {
+        if (reset) {
+          mashups.offset = 0;
+          mashups.items = [];
+          mashups.total = 0;
+        }
+        mashups.loading = true;
+        mashups.error = null;
+        renderMashups();
+        try {
+          const res = await invoke("mashups_search", {
+            text: mashups.text,
+            sort: mashups.sort,
+            game: mashups.game || null,
+            installedOnly: mashups.installedOnly,
+            offset: mashups.offset,
+            limit: 36,
+          });
+          mashups.items = mashups.items.concat(res.items);
+          mashups.total = res.total;
+          mashups.facets = res.games;
+          mashups.catalog = res.catalog;
+          mashups.loaded = true;
+        } catch (e) {
+          mashups.error = String(e);
+        } finally {
+          mashups.loading = false;
+          renderMashups();
+        }
+      }
+
+      function reloadMashups() {
+        clearTimeout(mashups.timer);
+        mashups.timer = setTimeout(() => loadMashups(true), 0);
+      }
+
+      async function openDetail(slug, back) {
+        detailBack = back || (tab === "installed" ? "installed" : "mashups");
+        if (tab !== "mashups") setTab("mashups");
+        mashups.slug = slug;
+        mashups.detail = null;
+        mashups.detailError = null;
+        $("#mashup-list").hidden = true;
+        $("#mashup-detail").hidden = false;
+        renderDetail(true);
+        try {
+          const d = await invoke("mashups_detail", { slug });
+          if (mashups.slug !== slug) return;
+          mashups.detail = d;
+        } catch (e) {
+          if (mashups.slug !== slug) return;
+          mashups.detailError = String(e);
+        }
+        renderDetail(true);
+      }
+      window.__openMashup = openDetail;
+
+      function closeDetail() {
+        mashups.slug = null;
+        mashups.detail = null;
+        mashups.detailError = null;
+        lastDetailSlug = null;
+        const box = $("#mashup-detail");
+        box.hidden = true;
+        box.dataset.rendered = "0";
+        box.replaceChildren();
+        $("#mashup-list").hidden = false;
+        const back = detailBack;
+        detailBack = "mashups";
+        setTab(back);
+      }
+
+      const escapeHtml = (text) => String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+      function inlineMarkdown(text) {
+        const codes = [];
+        let s = escapeHtml(text).replace(/`([^`]+)`/g, (_, code) => {
+          codes.push(code);
+          return `\u0000${codes.length - 1}\u0000`;
+        });
+        s = s.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img alt="$1" src="$2" loading="lazy" />');
+        s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+        s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+        s = s.replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+        s = s.replace(/\u0000(\d+)\u0000/g, (_, index) => `<code>${codes[Number(index)]}</code>`);
+        return s;
+      }
+
+      function markdown(text) {
+        const root = el("div", { className: "desc" });
+        const lines = String(text || "").replace(/\r\n/g, "\n").split("\n");
+        let i = 0;
+        const para = [];
+        const flush = () => {
+          if (para.length) {
+            root.append(el("p", { innerHTML: inlineMarkdown(para.join(" ")) }));
+            para.length = 0;
+          }
+        };
+        while (i < lines.length) {
+          const line = lines[i];
+          if (!line.trim()) { flush(); i++; continue; }
+          if (line.startsWith("```")) {
+            flush();
+            i++;
+            const code = [];
+            while (i < lines.length && !lines[i].startsWith("```")) code.push(lines[i++]);
+            if (i < lines.length) i++;
+            root.append(el("pre", {}, el("code", { textContent: code.join("\n") })));
+            continue;
+          }
+          const heading = /^(#{1,4})\s+(.*)$/.exec(line);
+          if (heading) {
+            flush();
+            root.append(el("h" + heading[1].length, { innerHTML: inlineMarkdown(heading[2]) }));
+            i++;
+            continue;
+          }
+          if (/^\s*[-*+]\s+/.test(line)) {
+            flush();
+            const list = el("ul");
+            while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) {
+              list.append(el("li", { innerHTML: inlineMarkdown(lines[i].replace(/^\s*[-*+]\s+/, "")) }));
+              i++;
+            }
+            root.append(list);
+            continue;
+          }
+          if (/^\s*\d+[.)]\s+/.test(line)) {
+            flush();
+            const list = el("ol");
+            while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) {
+              list.append(el("li", { innerHTML: inlineMarkdown(lines[i].replace(/^\s*\d+[.)]\s+/, "")) }));
+              i++;
+            }
+            root.append(list);
+            continue;
+          }
+          if (/^>\s?/.test(line)) {
+            flush();
+            const quote = [];
+            while (i < lines.length && /^>\s?/.test(lines[i])) quote.push(lines[i++].replace(/^>\s?/, ""));
+            root.append(el("blockquote", {}, el("p", { innerHTML: inlineMarkdown(quote.join(" ")) })));
+            continue;
+          }
+          para.push(line.trim());
+          i++;
+        }
+        flush();
+        return root;
+      }
+
+      function getAll(d, paths, def) {
+        for (const p of paths) {
+          const parts = p.split(".");
+          let cur = d;
+          for (const part of parts) {
+            if (cur == null) break;
+            cur = cur[part];
+          }
+          if (cur !== undefined && cur !== null && cur !== "") return cur;
+        }
+        return def;
+      }
+
+      function formatDate(v) {
+        if (!v) return null;
+        try {
+          const dt = new Date(v);
+          if (Number.isNaN(dt.getTime())) return String(v);
+          return dt.toLocaleString();
+        } catch {
+          return String(v);
+        }
+      }
+
+      let lastDetailSlug = null;
+      function renderDetail(force) {
+        const box = $("#mashup-detail");
+        let slug = mashups.slug || (mashups.detail && (mashups.detail.slug));
+        if (!force && lastDetailSlug && slug && lastDetailSlug === slug && box.dataset.rendered === "1") {
+          return;
+        }
+        lastDetailSlug = slug || null;
+        const back = el("button", { className: "back", type: "button" }, detailBack === "installed" ? "← Back to installed" : "← Back to mashups");
+        back.onclick = closeDetail;
+        const scroll = box.scrollTop;
+        box.replaceChildren(back);
+        box.dataset.rendered = "0";
+        requestAnimationFrame(() => { box.scrollTop = 0; });
+        if (mashups.detailError) {
+          box.append(el("div", { className: "empty" }, "This mashup could not be loaded: " + mashups.detailError));
+          return;
+        }
+        if (!mashups.detail) {
+          box.append(el("div", { className: "spinner" }, "Loading mashup…"));
+          return;
+        }
+        const d = mashups.detail;
+        slug = d.slug || slug;
+        const title = d.title || d.name || slug || "Mashup";
+        const tagline = d.tagline || d.subtitle || d.shortDescription || "";
+        const creator = d.creator || {};
+        const creatorName = creator.name || d.madeBy || d.author || d.user?.name || null;
+        const creatorAvatar = mediaUrl(creator.avatarUrl || creator.avatar || d.avatarUrl || d.authorAvatar);
+        const creatorUrl = creator.url || d.creatorUrl || (creator.username ? `https://melty.gg/u/${creator.username}` : null);
+        const cover = mediaUrl(getAll(d, ["coverUrl", "cover", "thumbnailUrl", "thumbnail", "image", "banner", "posterUrl", "logoUrl", "cover_image", "headerImage", "header", "hero", "backgroundImage"]));
+        const media = getAll(d, ["previewMedia", "preview_media", "media", "images", "gallery", "screenshots", "videos", "previews", "previewsMedia"], []);
+        const pricing = String(d.pricing || d.priceType || "").toLowerCase();
+        const priceCents = Number(getAll(d, ["priceCents", "price_cents", "price"], 0));
+        const isFree = pricing === "free" || priceCents <= 0;
+        const status = d.status || d.state || "";
+        const version = d.version || d.currentVersion || d.release?.version || null;
+        const installs = getAll(d, ["installs", "installCount", "downloads", "downloadCount"], null);
+        const gets = getAll(d, ["gets", "views", "viewCount", "playCount"], null);
+        const stars = getAll(d, ["stars", "rating", "averageRating"], null);
+        const ratingCount = getAll(d, ["ratingCount", "ratingsCount", "starsCount"], null);
+        const publishedAt = getAll(d, ["publishedAt", "published_at", "createdAt", "created_at", "releaseDate"], null);
+        const updatedAt = getAll(d, ["updatedAt", "updated_at", "lastUpdated", "modifiedAt"], null);
+        const modId = getAll(d, ["modId", "id", "mod_id", "_id"], null);
+        const games = Array.isArray(d.games) ? d.games : [];
+        const tags = Array.isArray(d.tags) ? d.tags : (Array.isArray(d.genres) ? d.genres : []);
+        const categories = Array.isArray(d.categories) ? d.categories : [];
+        const features = Array.isArray(d.features) ? d.features : [];
+        const dependencies = Array.isArray(d.dependencies) ? d.dependencies : (Array.isArray(d.requirements) ? d.requirements : []);
+        const links = [];
+        if (d.website) links.push({ label: "Website", url: d.website });
+        if (d.discord) links.push({ label: "Discord", url: d.discord });
+        if (d.github) links.push({ label: "GitHub", url: d.github });
+        if (d.koFi || d.kofi) links.push({ label: "Ko-fi", url: d.koFi || d.kofi });
+        if (d.patreon) links.push({ label: "Patreon", url: d.patreon });
+        if (d.sourceUrl) links.push({ label: "Source", url: d.sourceUrl });
+        if (d.reportUrl) links.push({ label: "Report", url: d.reportUrl });
+        if (slug) links.push({ label: "View on melty.gg", url: state?.app?.webBase ? (state.app.webBase.replace(/\/$/, "") + "/m/" + slug) : `https://melty.gg/m/${slug}` });
+        const desc = d.descriptionMd || d.description_markdown || d.description || d.longDescription || d.long_description || d.body || d.about || d.details || d.summary || "";
+
+        if (cover && !/\.(mp4|webm|ogg|mov)(\?|$)/i.test(cover)) {
+          const img = el("img", { className: "detail-cover", src: cover, alt: "" });
+          img.setAttribute("referrerpolicy", "no-referrer");
+          img.onerror = () => img.remove();
+          box.append(img);
+        } else if (Array.isArray(media) && media.length) {
+          const first = media.find((x) => x && (typeof x === "string" || x.url || x.src || x.imageUrl || x.thumbnailUrl));
+          const furl = typeof first === "string" ? first : (first?.url || first?.src || first?.imageUrl || first?.thumbnailUrl);
+          const fcover = mediaUrl(furl);
+          if (fcover && !/\.(mp4|webm|ogg|mov)(\?|$)/i.test(fcover)) {
+            const img = el("img", { className: "detail-cover", src: fcover, alt: "" });
+            img.setAttribute("referrerpolicy", "no-referrer");
+            img.onerror = () => img.remove();
+            box.append(img);
+          }
+        }
+
+        const header = el("div", { className: "detail-header" });
+        const titleRow = el("div", { className: "detail-title-row" });
+        titleRow.append(el("h1", { className: "detail-title" }, title));
+        if (status) {
+          const b = el("span", { className: "detail-badge" }, String(status).toUpperCase());
+          if (/live/i.test(status)) b.classList.add("live");
+          titleRow.append(b);
+        }
+        if (isFree) titleRow.append(el("span", { className: "detail-badge free" }, "FREE"));
+        else if (priceCents > 0) titleRow.append(el("span", { className: "detail-badge paid" }, `PAID • ${(priceCents/100).toFixed(2)}`));
+        header.append(titleRow);
+        if (tagline) header.append(el("p", { className: "sub" }, tagline));
+        if (creatorName) {
+          const c = el("div", { className: "detail-creator" });
+          if (creatorAvatar) {
+            const a = el("img", { className: "avatar", src: creatorAvatar, alt: "" });
+            a.onerror = () => a.remove();
+            c.append(a);
+          }
+          if (creatorUrl) c.append(el("a", { href: creatorUrl, target: "_blank", rel: "noreferrer", textContent: "by " + creatorName }));
+          else c.append(el("span", { textContent: "by " + creatorName }));
+          header.append(c);
+        }
+        box.append(header);
+
+        if (Array.isArray(media) && media.length) {
+          const gallery = el("div", { className: "media-gallery" });
+          for (const item of media) {
+            if (!item) continue;
+            if (typeof item === "string") {
+              const murl = mediaUrl(item);
+              if (!murl) continue;
+              const isVideo = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(murl);
+              if (isVideo) {
+                const wrap = el("div", { className: "media-item clickable" });
+                const vid = el("video", { src: murl, playsInline: true, preload: "metadata", muted: true });
+                vid.onerror = () => wrap.remove();
+                wrap.append(vid);
+                wrap.onclick = (e) => { e.stopPropagation(); openLightbox(murl, true); };
+                gallery.append(wrap);
+              } else {
+                const wrap = el("div", { className: "media-item clickable" });
+                const img = el("img", { src: murl, alt: "", loading: "lazy" });
+                img.onerror = () => wrap.remove();
+                wrap.append(img);
+                wrap.onclick = () => openLightbox(murl, false);
+                gallery.append(wrap);
+              }
+              continue;
+            }
+            if (typeof item === "object") {
+              const url = item.url || item.src || item.href || item.path || item.imageUrl || item.thumbnailUrl;
+              const kind = item.kind || item.type || item.mediaType || "";
+              const murl = mediaUrl(url);
+              if (!murl) continue;
+              const isVideo = /video/i.test(kind) || /\.(mp4|webm|ogg|mov)(\?|$)/i.test(murl);
+              if (isVideo) {
+                const wrap = el("div", { className: "media-item clickable" });
+                const vid = el("video", { src: murl, playsInline: true, preload: "metadata", muted: true });
+                vid.onerror = () => wrap.remove();
+                wrap.append(vid);
+                wrap.onclick = (e) => { e.stopPropagation(); openLightbox(murl, true); };
+                gallery.append(wrap);
+              } else {
+                const wrap = el("div", { className: "media-item clickable" });
+                const img = el("img", { src: murl, alt: item.alt || "", loading: "lazy" });
+                img.onerror = () => wrap.remove();
+                wrap.append(img);
+                wrap.onclick = () => openLightbox(murl, false);
+                gallery.append(wrap);
+              }
+            }
+          }
+          if (gallery.childElementCount) box.append(gallery);
+        }
+
+        const grid = el("div", { className: "detail-grid" });
+        const main = el("div", { className: "detail-main" });
+        if (typeof desc === "string" && desc.trim()) {
+          const sec = el("div");
+          sec.append(el("h2", { className: "section-title" }, "Description"));
+          sec.append(markdown(desc));
+          main.append(sec);
+        }
+
+        const side = el("div", { className: "detail-side" });
+        const actions = el("div", { className: "row-head" });
+        const installedItemRec = installedItem(modId, slug);
+        const libItem = libraryItem(modId, slug);
+        const installId = installedItemRec?.modId || libItem?.modId || modId;
+        const free = isFree || (d.pricing !== "paid" && priceCents <= 0);
+        const needsPurchase = Boolean(state?.account?.signedIn) && !installedItemRec && library.loaded && !libItem && !free;
+        if (installedItemRec) {
+          const run = (state?.mods?.running || []).find((x) => x.modId === installedItemRec.modId);
+          if (run) {
+            const stop = el("button", { className: "btn primary", type: "button", textContent: "Stop" });
+            stop.disabled = !run.stoppable;
+            stop.onclick = () => stopMashup(installedItemRec.modId, stop);
+            actions.append(stop);
+          } else {
+            const play = el("button", { className: "btn primary", type: "button", textContent: "Play" });
+            play.disabled = !installedItemRec.enabled;
+            play.onclick = () => launchMashup(installedItemRec.modId, play);
+            actions.append(play);
+          }
+          if (libItem?.update) {
+            const update = el("button", { className: "btn primary", type: "button", textContent: "Update" });
+            update.onclick = () => installMashup(installedItemRec.modId, update, { slug: installedItemRec.slug, title: installedItemRec.title });
+            actions.append(update);
+          }
+          const manage = el("button", { className: "btn", type: "button", textContent: "Manage" });
+          manage.onclick = () => setTab("installed");
+          actions.append(manage);
+          addGameCopyButtons(actions, installedItemRec);
+          const remove = el("button", { className: "btn", type: "button", textContent: "Remove" });
+          remove.onclick = () => uninstallMashup(installedItemRec.modId, installedItemRec.title || title);
+          actions.append(remove);
+        } else if (state?.account?.signedIn) {
+          if (needsPurchase) {
+            const get = el("button", { className: "btn primary", type: "button", textContent: "Paid – get on melty.gg" });
+            get.title = "This mashup is paid; the client cannot complete purchases";
+            get.onclick = () => invoke("mashups_open", { slug }).catch((e) => alert(String(e)));
+            actions.append(get);
+          } else {
+            const install = el("button", { className: "btn primary", type: "button", textContent: "Install" });
+            install.disabled = !installId;
+            install.title = installId ? "Install this mashup" : "This mashup cannot be installed yet";
+            install.onclick = () => installMashup(installId, install, { slug, title });
+            actions.append(install);
+          }
+        } else {
+          const login = el("button", { className: "btn primary", type: "button", textContent: "Sign in to install" });
+          login.onclick = signIn;
+          actions.append(login);
+        }
+        if (!needsPurchase) {
+          const open = el("button", { className: "btn", type: "button", textContent: "Open on melty.gg" });
+          open.onclick = () => invoke("mashups_open", { slug }).catch((e) => alert(String(e)));
+          actions.append(open);
+        }
+        side.append(actions);
+
+        const info = el("div", { className: "panel" });
+        info.append(el("div", { className: "panel-header" }, "Information"));
+        const ib = el("div", { className: "panel-body" });
+        const addKv = (k, v) => {
+          if (v == null || v === "") return;
+          const row = el("div", { className: "kv" });
+          row.append(el("div", { className: "k" }, k));
+          row.append(el("div", { className: "v" }, typeof v === "object" ? JSON.stringify(v) : String(v)));
+          ib.append(row);
+        };
+        addKv("Slug", slug);
+        addKv("ID", modId);
+        addKv("Version", version);
+        addKv("Status", status);
+        addKv("Pricing", isFree ? "Free" : (priceCents > 0 ? `$${(priceCents/100).toFixed(2)}` : pricing));
+        addKv("Installs", installs != null ? num(installs) : null);
+        addKv("Views/Gets", gets != null ? num(gets) : null);
+        if (stars != null) addKv("Rating", ratingCount != null ? `${Number(stars).toFixed(1)} (${num(ratingCount)})` : Number(stars).toFixed(1));
+        addKv("Published", formatDate(publishedAt));
+        addKv("Updated", formatDate(updatedAt));
+        addKv("Remix of", d.remixOf || d.remix_of || d.remixOfId || null);
+        if (ib.childElementCount) { info.append(ib); side.append(info); }
+
+        if (games.length) {
+          const gpanel = el("div", { className: "panel" });
+          gpanel.append(el("div", { className: "panel-header" }, "Games"));
+          const gb = el("div", { className: "panel-body" });
+          const glist = el("div", { className: "taglist" });
+          for (const g of games) {
+            const label = g.shortName || g.name || g.title || g.slug || String(g);
+            glist.append(el("span", { className: "tagpill" }, label));
+          }
+          gb.append(glist);
+          gpanel.append(gb);
+          side.append(gpanel);
+        }
+
+        if (tags.length || categories.length) {
+          const tpanel = el("div", { className: "panel" });
+          tpanel.append(el("div", { className: "panel-header" }, "Tags & Categories"));
+          const tb = el("div", { className: "panel-body" });
+          const tlist = el("div", { className: "taglist" });
+          for (const t of [...tags, ...categories]) {
+            const label = typeof t === "string" ? t : (t.name || t.title || t.slug || "");
+            if (label) tlist.append(el("span", { className: "tagpill" }, label));
+          }
+          if (tlist.childElementCount) { tb.append(tlist); tpanel.append(tb); side.append(tpanel); }
+        }
+
+        if (features.length) {
+          const fpanel = el("div", { className: "panel" });
+          fpanel.append(el("div", { className: "panel-header" }, "Features"));
+          const fb = el("div", { className: "panel-body" });
+          const flist = el("ul", { style: "margin:0; padding-left:18px; display:grid; gap:4px;" });
+          for (const f of features) {
+            const label = typeof f === "string" ? f : (f.name || f.title || f.description || "");
+            if (label) flist.append(el("li", {}, label));
+          }
+          if (flist.childElementCount) { fb.append(flist); fpanel.append(fb); side.append(fpanel); }
+        }
+
+        if (dependencies.length) {
+          const dpanel = el("div", { className: "panel" });
+          dpanel.append(el("div", { className: "panel-header" }, "Dependencies / Requirements"));
+          const db = el("div", { className: "panel-body" });
+          const dlist = el("ul", { style: "margin:0; padding-left:18px; display:grid; gap:4px;" });
+          for (const dep of dependencies) {
+            if (typeof dep === "string") dlist.append(el("li", {}, dep));
+            else if (dep && typeof dep === "object") dlist.append(el("li", {}, dep.name || dep.title || dep.slug || dep.id || JSON.stringify(dep)));
+          }
+          if (dlist.childElementCount) { db.append(dlist); dpanel.append(db); side.append(dpanel); }
+        }
+
+        if (links.length) {
+          const lpanel = el("div", { className: "panel" });
+          lpanel.append(el("div", { className: "panel-header" }, "Links"));
+          const lb = el("div", { className: "panel-body" });
+          const llist = el("div", { className: "linklist" });
+          for (const l of links) {
+            if (!l.url) continue;
+            const a = el("a", { href: l.url, target: "_blank", rel: "noreferrer", textContent: l.label });
+            llist.append(a);
+          }
+          if (llist.childElementCount) { lb.append(llist); lpanel.append(lb); side.append(lpanel); }
+        }
+
+        if (d.play) {
+          const ppanel = el("div", { className: "panel" });
+          ppanel.append(el("div", { className: "panel-header" }, "Play Info"));
+          const pb = el("div", { className: "panel-body" });
+          const addPv = (k, v) => {
+            if (v == null || v === "") return;
+            const row = el("div", { className: "kv" });
+            row.append(el("div", { className: "k" }, k));
+            row.append(el("div", { className: "v" }, typeof v === "object" ? JSON.stringify(v) : String(v)));
+            pb.append(row);
+          };
+          if (typeof d.play === "object") {
+            addPv("Mode", d.play.mode);
+            addPv("Release ID", d.play.releaseId || d.play.release_id);
+            addPv("Multiplayer", d.play.multiplayer);
+            if (Array.isArray(d.play.needs)) {
+              const needsStr = d.play.needs.map((n) => (typeof n === "string" ? n : (n?.name || n?.title || n?.slug || n?.id || JSON.stringify(n)))).join(", ");
+              addPv("Needs", needsStr);
+            } else if (d.play.needs != null) {
+              addPv("Needs", typeof d.play.needs === "object" ? JSON.stringify(d.play.needs) : d.play.needs);
+            }
+          } else {
+            addPv("Play", d.play);
+          }
+          if (pb.childElementCount) { ppanel.append(pb); side.append(ppanel); }
+        }
+
+        const rawPanel = el("div", { className: "panel" });
+        const rawHeader = el("button", { className: "panel-header", type: "button", style: "all:unset; cursor:pointer; width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 16px 6px; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted);" }, "All Data (Raw)", el("span", { textContent: "▸" }));
+        const rawBody = el("div", { className: "panel-body", hidden: true });
+        rawBody.append(el("div", { className: "v", style: "font:12px ui-monospace, SFMono-Regular, Menlo, monospace; white-space:pre-wrap; word-break:break-word;" }, JSON.stringify(d, null, 2)));
+        rawHeader.onclick = () => {
+          const h = rawHeader.querySelector("span");
+          if (rawBody.hidden) { rawBody.hidden = false; if (h) h.textContent = "▾"; }
+          else { rawBody.hidden = true; if (h) h.textContent = "▸"; }
+        };
+        rawPanel.append(rawHeader);
+        rawPanel.append(rawBody);
+        side.append(rawPanel);
+
+        const copyPath = gameCopyPath(installedItemRec);
+        if (copyPath) {
+          side.append(el("div", { className: "path", textContent: "Game copy: " + copyPath, title: copyPath }));
+        }
+
+        grid.append(main);
+        grid.append(side);
+        box.append(grid);
+        box.dataset.rendered = "1";
+        requestAnimationFrame(() => { box.scrollTop = 0; });
+      }
+
+      $("#mq").oninput = () => {
+        mashups.text = $("#mq").value;
+        clearTimeout(mashups.timer);
+        mashups.timer = setTimeout(() => loadMashups(true), 200);
+      };
+      $("#msort").onchange = () => { mashups.sort = $("#msort").value; loadMashups(true); };
+      $("#mgame").onchange = () => { mashups.game = $("#mgame").value; loadMashups(true); };
+      const mms2 = $("#mminstars");
+      if (mms2) {
+        let t;
+        const apply = () => {
+          const v = Number(mms2.value);
+          mashups.minStars = v;
+          const st = $("#mstars");
+          if (st) st.textContent = v > 0 ? v.toFixed(1) + " ★+" : "Any ★";
+          renderMashups();
+        };
+        mms2.oninput = () => {
+          clearTimeout(t);
+          t = setTimeout(apply, 120);
+        };
+        mms2.onchange = apply;
+      }
+      const mv = $("#mview");
+      if (mv) mv.value = mashups.view;
+      const dfv = localStorage.getItem("mashupView") || "grid";
+      mashups.view = dfv;
+      if (mv) mv.value = dfv;
+      $("#mview").onchange = () => { mashups.view = $("#mview").value; localStorage.setItem("mashupView", mashups.view); renderMashups(); };
+      $("#minstalled").onchange = () => { mashups.installedOnly = $("#minstalled").checked; loadMashups(true); };
+      $("#mmore").onclick = () => { mashups.offset = mashups.items.length; loadMashups(false); };
+      $("#mrefresh").onclick = async () => {
+        mashups.loading = true;
+        mashups.error = null;
+        renderMashups();
+        try { await invoke("mashups_refresh"); } catch (e) { mashups.error = String(e); }
+        mashups.loading = false;
+        await loadMashups(true);
+      };
+
+      // ---------------------------------------------------------------- Installed / account
+
+      const phaseLabel = {
+        starting: "Starting",
+        ticket: "Checking your library",
+        claim: "Adding to your library",
+        prefix: "Preparing game prefix",
+        download: "Downloading",
+        unpack: "Unpacking",
+        update: "Replacing the old version",
+        loader: "Installing loader",
+        install: "Installing files",
+        remove: "Removing",
+        done: "Done",
+        error: "Failed",
+      };
+
+      function pill(text, cls) {
+        return el("span", { className: "pill " + (cls || ""), textContent: text });
+      }
+
+      function libraryItem(modId, slug) {
+        return library.mods.find((m) => (modId && m.modId === modId) || (slug && m.slug === slug)) || null;
+      }
+
+      function installedItem(modId, slug) {
+        return (state?.mods?.installed || []).find((r) => (modId && r.modId === modId) || (slug && r.slug === slug)) || null;
+      }
+
+      function gameName(slug) {
+        const game = (state?.games || []).find((g) => g.gameId === slug);
+        if (game) return game.name;
+        const item = (library.mods || []).find((m) => (m.gameSlugs || []).includes(slug));
+        return slug || "Unknown game";
+      }
+
+      async function loadLibrary(force) {
+        if (library.loading) return;
+        if (!force && library.at && Date.now() - library.at < 60_000) return;
+        library.loading = true;
+        try {
+          const res = await invoke("mods_library");
+          library.signedIn = Boolean(res.signedIn);
+          library.loaded = Boolean(res.signedIn);
+          library.mods = res.mods || [];
+          library.error = res.error || null;
+        } catch (e) {
+          library.error = String(e);
+        } finally {
+          library.loading = false;
+          library.at = Date.now();
+          if (state) {
+            renderInstalled();
+            if (mashups.slug) renderDetail();
+          }
+        }
+      }
+
+      async function signIn() {
+        try {
+          await invoke("account_login");
+        } catch (e) {
+          alert(String(e));
+        }
+        refresh();
+      }
+
+      async function signOut() {
+        try {
+          await invoke("account_logout");
+        } catch (e) {
+          alert(String(e));
+        }
+        library.loaded = false;
+        library.mods = [];
+        library.signedIn = false;
+        library.at = 0;
+        library.error = null;
+        refresh();
+      }
+
+      async function installMashup(modId, button, meta) {
+        if (!modId) {
+          alert("This mashup has no install id.");
+          return;
+        }
+        if (button) button.disabled = true;
+        try {
+          await invoke("mods_install", { modId, slug: meta?.slug ?? null, title: meta?.title ?? null });
+          setTab("installed");
+          await refresh();
+          loadLibrary(true);
+        } catch (e) {
+          alert(String(e));
+          if (button) button.disabled = false;
+        }
+      }
+
+      async function uninstallMashup(modId, title) {
+        if (!confirm(`Remove “${title || modId}” from this computer? Files changed by the game itself are left alone.`)) return;
+        const removeData = confirm("Also delete this mashup's saved data (configs, worlds, caches)?\n\nOK = yes, delete data too\nCancel = keep data");
+        try {
+          await invoke("mods_uninstall", { modId, removeData });
+          await refresh();
+          loadLibrary(true);
+        } catch (e) {
+          alert(String(e));
+        }
+      }
+
+      async function launchMashup(modId, button) {
+        const label = button?.textContent;
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Starting…";
+        }
+        try {
+          const result = await invoke("mods_launch", { modId });
+          if (result?.setup) {
+            const label = result.label || "Mashup";
+            alert(`${label} setup started. Finish the sign-in/setup in the window that opened, then press Play again.`);
+          }
+        } catch (e) {
+          alert(String(e));
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent = label || "Play";
+          }
+          await refresh();
+        }
+      }
+
+      function gameCopyPath(record) {
+        const paths = record?.gamePaths || {};
+        const slug = record?.primaryGameSlug || Object.keys(paths)[0];
+        return (slug && paths[slug]) || null;
+      }
+
+      async function chooseGameCopy(record, button) {
+        const label = button?.textContent;
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Choosing…";
+        }
+        try {
+          const picked = await invoke("mods_pick_game_folder", { start: gameCopyPath(record) });
+          if (!picked) return;
+          const info = await invoke("mods_set_game_copy", { modId: record.modId, path: picked });
+          alert(`Compatible game copy set:\n${info.path}${info.version ? `\n${gameName(record.primaryGameSlug)} version ${info.version}` : ""}`);
+          await refresh();
+        } catch (e) {
+          alert(String(e));
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent = label || "Game copy...";
+          }
+        }
+      }
+
+      async function clearGameCopy(record, button) {
+        if (!confirm(`Use the Steam installation again for “${record.title || record.slug}”?\n\nThe files this client copied into the game copy will be removed; the game copy itself stays.`)) return;
+        if (button) button.disabled = true;
+        try {
+          await invoke("mods_set_game_copy", { modId: record.modId, path: null });
+          await refresh();
+        } catch (e) {
+          alert(String(e));
+        } finally {
+          if (button) button.disabled = false;
+        }
+      }
+
+      function addGameCopyButtons(actions, record) {
+        if (!record?.gameCopyAvailable) return;
+        const current = gameCopyPath(record);
+        const choose = el("button", { className: "btn", type: "button", textContent: current ? "Change copy" : "Game copy..." });
+        choose.title = current
+          ? `Compatible game copy: ${current}`
+          : "Start this mashup with a separate, compatible copy of the game (for example Elden Ring 2.7.1.1)";
+        choose.onclick = () => chooseGameCopy(record, choose);
+        actions.append(choose);
+        if (current) {
+          const steam = el("button", { className: "btn", type: "button", textContent: "Use Steam" });
+          steam.title = "Use the normal Steam installation again";
+          steam.onclick = () => clearGameCopy(record, steam);
+          actions.append(steam);
+        }
+      }
+
+      async function stopMashup(modId, button) {
+        if (button) button.disabled = true;
+        try {
+          await invoke("mods_stop", { modId });
+        } catch (e) {
+          alert(String(e));
+        } finally {
+          if (button) button.disabled = false;
+          await refresh();
+        }
+      }
+
+      async function toggleMashup(modId, enabled, button) {
+        if (button) button.disabled = true;
+        try {
+          await invoke("mods_set_enabled", { modId, enabled });
+        } catch (e) {
+          alert(String(e));
+        } finally {
+          if (button) button.disabled = false;
+          await refresh();
+        }
+      }
+
+      function renderAccount() {
+        const box = $("#account");
+        const a = state?.account || {};
+        box.replaceChildren();
+        box.append(el("div", { className: "who" }, a.signedIn ? "Signed in to Melty" : "Not signed in"));
+        if (a.pending) box.append(el("div", { className: "hint" }, "Complete the sign-in in your browser. This window updates by itself."));
+        if (a.error) box.append(el("div", { className: "err" }, a.error));
+        if (a.signedIn) {
+          const out = el("button", { type: "button", textContent: "Sign out" });
+          out.onclick = signOut;
+          box.append(out);
+        } else {
+          const login = el("button", { type: "button", className: "primary", textContent: a.pending ? "Waiting…" : "Sign in" });
+          login.disabled = Boolean(a.pending);
+          login.onclick = signIn;
+          box.append(login);
+          if (a.pending) {
+            const cancel = el("button", { type: "button", textContent: "Cancel" });
+            cancel.onclick = signOut;
+            box.append(cancel);
+          } else {
+            box.append(el("div", { className: "hint" }, "Sign in to install from your Melty library."));
+          }
+        }
+      }
+
+      function renderJobs() {
+        const box = $("#jobs");
+        const jobs = state?.mods?.jobs || [];
+        box.replaceChildren();
+        if (!jobs.length) return;
+        const head = el("div", { className: "row-head" });
+        head.append(el("span", { className: "meta", textContent: jobs.some((j) => !j.done) ? "Working…" : "Last task" }));
+        if (jobs.some((j) => j.done)) {
+          const clear = el("button", { className: "btn", type: "button", textContent: "Dismiss finished" });
+          clear.onclick = () => invoke("mods_clear_jobs").then(refresh).catch((e) => alert(String(e)));
+          head.append(clear);
+        }
+        box.append(head);
+        for (const job of jobs) {
+          const wrap = el("div", { className: "job" + (job.error ? " bad" : "") });
+          const top = el("div", { className: "job-head" });
+          const title = job.title || job.slug || job.modId || "Mashup";
+          top.append(el("span", { className: "grow" }, title), el("small", { textContent: job.error ? "Failed" : (phaseLabel[job.phase] || job.phase) }));
+          wrap.append(top);
+          if (job.error) {
+            wrap.append(el("div", { className: "err", textContent: job.error }));
+            const fix = el("div", { className: "row-head" });
+            if (job.errorCode === "not-owned" && job.slug) {
+              const get = el("button", { className: "btn primary", type: "button", textContent: "Auf melty.gg holen" });
+              get.title = "Open the mashup page; the site adds it to your library automatically";
+              get.onclick = () => invoke("mashups_open", { slug: job.slug }).catch((e) => alert(String(e)));
+              fix.append(get);
+            } else if (job.errorCode === "paid" && job.slug) {
+              const get = el("button", { className: "btn primary", type: "button", textContent: "Auf melty.gg holen" });
+              get.title = "This mashup is paid; the client cannot complete purchases";
+              get.onclick = () => invoke("mashups_open", { slug: job.slug }).catch((e) => alert(String(e)));
+              fix.append(get);
+            } else if (job.errorCode === "claim-session") {
+              const sign = el("button", { className: "btn primary", type: "button", textContent: "Anmelden" });
+              sign.onclick = signIn;
+              fix.append(sign);
+            }
+            if (["not-owned", "claim-session", "claim-failed"].includes(job.errorCode)) {
+              const retry = el("button", { className: "btn", type: "button", textContent: "Erneut versuchen" });
+              retry.title = "Install again";
+              retry.onclick = () => installMashup(job.modId, retry, { slug: job.slug, title: job.title });
+              fix.append(retry);
+            }
+            if (fix.childElementCount) wrap.append(fix);
+          } else {
+            const pct = job.bytesTotal ? Math.max(2, Math.min(100, Math.round((job.bytesDone / job.bytesTotal) * 100))) : (job.done ? 100 : 0);
+            const bar = el("div", { className: "bar" }, el("i", { style: `width:${pct}%` }));
+            wrap.append(bar);
+            if (job.bytesTotal) wrap.append(el("small", { textContent: `${num(job.bytesDone)} / ${num(job.bytesTotal)} bytes` }));
+          }
+          box.append(wrap);
+        }
+      }
+
+      applyTheme();
+      function renderInstalled() {
+        if (!state) return;
+        const installed = state.mods?.installed || [];
+        const running = state.mods?.running || [];
+        $("#icount").textContent = installed.length;
+        $("#icount-inline").textContent = installed.length ? String(installed.length) : "";
+        $("#i-error").hidden = !library.error;
+        $("#i-error-text").textContent = library.error || "";
+        const list = $("#installed-list");
+        list.replaceChildren();
+        renderJobs();
+        if (!installed.length) {
+          const empty = el("div", { className: "empty" });
+          empty.append(state.account?.signedIn
+            ? "Nothing installed yet. Open the Mashups tab and pick something."
+            : "Nothing installed yet. Sign in to see and install mashups from your Melty library.");
+          if (!state.account?.signedIn) {
+            const sign = el("button", { className: "btn primary", type: "button", textContent: "Sign in" });
+            sign.style.marginLeft = "10px";
+            sign.onclick = signIn;
+            empty.append(sign);
+          }
+          list.append(empty);
+          return;
+        }
+        const sorted = [...installed].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+        for (const r of sorted) {
+          const lib = libraryItem(r.modId, r.slug);
+          const run = running.find((x) => x.modId === r.modId);
+          const name = el("button", { className: "name", type: "button", textContent: r.title || r.slug || r.modId });
+          name.title = "Open mashup details";
+          name.onclick = () => openDetail(r.slug, "installed");
+          const copyPath = gameCopyPath(r);
+          const title = el("h3", {}, name, el("span", { className: "version" }, "v" + (r.version || "?")));
+          if (!r.enabled) title.append(pill("Disabled"));
+          if (run) title.append(pill("Running", "run"));
+          if (lib?.update) title.append(pill("Update", "proton"));
+          if (copyPath) title.append(pill("Game copy", "proton"));
+          for (const loader of (r.loaders || []).slice(0, 3)) title.append(pill(loader));
+          const metaText = `${gameName(r.primaryGameSlug)} · ${r.fileCount || 0} files` + (copyPath ? ` · ${copyPath}` : "");
+          const meta = el("div", { className: "path", textContent: metaText, title: copyPath || "" });
+          const actions = el("div", { className: "actions" });
+          if (run) {
+            const stop = el("button", { className: "btn primary", type: "button", textContent: "Stop" });
+            stop.disabled = !run.stoppable;
+            stop.title = run.stoppable ? "Stop the game" : "Started through Steam; stop it there";
+            stop.onclick = () => stopMashup(r.modId, stop);
+            actions.append(stop);
+          } else {
+            const play = el("button", { className: "btn primary", type: "button", textContent: "Play" });
+            play.disabled = !r.enabled;
+            play.title = r.enabled ? "Launch the game with this mashup" : "Enable the mashup first";
+            play.onclick = () => launchMashup(r.modId, play);
+            actions.append(play);
+          }
+          if (lib?.update) {
+            const update = el("button", { className: "btn primary", type: "button", textContent: "Update" });
+            update.onclick = () => installMashup(r.modId, update, { slug: r.slug, title: r.title });
+            actions.append(update);
+          }
+          addGameCopyButtons(actions, r);
+          const toggle = el("button", { className: "btn", type: "button", textContent: r.enabled ? "Disable" : "Enable" });
+          toggle.disabled = Boolean(run);
+          toggle.title = run ? "Stop the game first" : r.enabled ? "Move the mashup files aside" : "Put the mashup files back";
+          toggle.onclick = () => toggleMashup(r.modId, !r.enabled, toggle);
+          actions.append(toggle);
+          const details = el("button", { className: "btn", type: "button", textContent: "Details" });
+          details.onclick = () => openDetail(r.slug, "installed");
+          actions.append(details);
+          const folder = el("button", { className: "btn", type: "button", textContent: "Folder" });
+          folder.onclick = () => invoke("mods_open_folder", { modId: r.modId }).catch((e) => alert(String(e)));
+          actions.append(folder);
+          const remove = el("button", { className: "btn", type: "button", textContent: "Remove" });
+          remove.onclick = () => uninstallMashup(r.modId, r.title || r.slug);
+          actions.append(remove);
+          list.append(el("div", { className: "game installed-game" }, title, meta, actions));
+        }
+      }
+
+      // ---------------------------------------------------------------- Common
+
+      function render() {
+        if (!state) return;
+        $("#ver").textContent = `Melty Linux ${state.app.version}`;
+        renderGames(); renderSettings(); renderDiagnostics(); renderMashups(); renderAccount(); renderInstalled();
+        if (mashups.slug) renderDetail();
+      }
+
+      async function refresh() {
+        try {
+          state = await invoke("panel_state");
+          const signed = Boolean(state.account?.signedIn);
+          if (signed && !lastSignedIn) loadLibrary(true);
+          else if (signed && !library.loaded && !library.loading) loadLibrary(false);
+          else if (!signed && (library.loaded || library.mods.length)) {
+            library.loaded = false;
+            library.mods = [];
+            library.signedIn = false;
+            library.at = 0;
+            library.error = null;
+          }
+          lastSignedIn = signed;
+          const active = new Set((state.mods?.jobs || []).filter((j) => !j.done).map((j) => j.id));
+          let finished = false;
+          for (const id of knownActiveJobs) if (!active.has(id)) finished = true;
+          knownActiveJobs.clear();
+          for (const id of active) knownActiveJobs.add(id);
+          if (finished) loadLibrary(true);
+          render();
+          if (state.pendingMashup) {
+            setTab("mashups");
+            openDetail(state.pendingMashup);
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      async function change(key, value, needsRestart) {
+        try { const s = await invoke("panel_set", { key, value }); state.settings = s; renderSettings(); if (needsRestart) $("#restart").hidden = false; }
+        catch (e) { console.error(e); }
+      }
+
+      for (const b of document.querySelectorAll("nav button")) b.onclick = () => setTab(b.dataset.tab);
+      $("#defview")?.addEventListener("change", (e) => {
+        localStorage.setItem("mashupView", e.target.value);
+        mashups.view = e.target.value;
+        const mv = $("#mview");
+        if (mv) mv.value = e.target.value;
+        renderMashups();
+      });
+      $("#reduceMotion")?.addEventListener("click", function() {
+        const on = this.getAttribute("aria-checked") === "true";
+        this.setAttribute("aria-checked", on ? "false" : "true");
+        localStorage.setItem("reduceMotion", on ? "0" : "1");
+      });
+      $("#autoRefresh")?.addEventListener("click", function() {
+        const on = this.getAttribute("aria-checked") === "true";
+        this.setAttribute("aria-checked", on ? "false" : "true");
+        localStorage.setItem("autoRefresh", on ? "0" : "1");
+      });
+      $("#rememberTab")?.addEventListener("click", function() {
+        const on = this.getAttribute("aria-checked") === "true";
+        this.setAttribute("aria-checked", on ? "false" : "true");
+        localStorage.setItem("rememberTab", on ? "0" : "1");
+      });
+      $("#quickStats")?.addEventListener("click", function() {
+        const on = this.getAttribute("aria-checked") === "true";
+        this.setAttribute("aria-checked", on ? "false" : "true");
+        localStorage.setItem("quickStats", on ? "0" : "1");
+        renderMashups();
+      });
+      $("#clearCaches")?.addEventListener("click", async () => {
+        try {
+          mashups.cache.clear();
+          if (mashups.catalog) mashups.catalog = null;
+          mashups.loaded = false;
+          await invoke("mashups_refresh").catch(()=>{});
+          if (tab === "mashups") reloadMashups();
+          toast("Caches cleared");
+        } catch (e) {
+          alert(String(e));
+        }
+      });
+      $("#theme")?.addEventListener("change", (e) => { localStorage.setItem("theme", e.target.value); applyTheme(); });
+      $("#accent")?.addEventListener("change", (e) => { localStorage.setItem("accent", e.target.value); applyTheme(); });
+      $("#font")?.addEventListener("change", (e) => { localStorage.setItem("font", e.target.value); applyTheme(); });
+      for (const seg of document.querySelectorAll(".seg")) for (const b of seg.children) b.onclick = () => change(seg.dataset.key, b.dataset.v, seg.dataset.restart);
+      for (const sw of document.querySelectorAll(".switch")) sw.onclick = () => change(sw.dataset.key, sw.getAttribute("aria-checked") !== "true", sw.dataset.restart);
+      $("#filter").oninput = () => state && renderGames();
+      $("#site").onclick = () => invoke("panel_open_site").catch(console.error);
+      $("#restart-now").onclick = () => invoke("panel_restart").catch(console.error);
+      $("#copy").onclick = async () => {
+        const p = reportPairs();
+        const text = ["Melty Linux Client", ...[...p.app, ...p.env, ...p.det].map(([k, v]) => `${k}: ${String(v ?? "–").replace(/\n/g, "\n    ")}`)].join("\n");
+        try { await navigator.clipboard.writeText(text); toast("Report copied"); } catch { const t = el("textarea", { value: text }); document.body.append(t); t.select(); document.execCommand("copy"); t.remove(); toast("Report copied"); }
+        $("#copied").hidden = false; setTimeout(() => ($("#copied").hidden = true), 1800);
+      };
+      function toast(msg){
+        const t=$("#toast"); if(!t) return; t.textContent=msg; t.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",1600);
+      }
+
+      setTab(new URLSearchParams(location.search).get("tab") || localStorage.getItem("lastTab"));
+      refresh();
+      window.addEventListener("focus", () => {
+        if (!document.hidden && state?.account?.signedIn) loadLibrary(true);
+      });
+      setInterval(() => { if (!document.hidden && tab !== "settings") refresh(); }, 4000);
+      (function setupInfiniteScroll(){
+        const main = document.querySelector("main");
+        if (!main) return;
+        let ticking = false;
+        main.addEventListener("scroll", () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(() => {
+            ticking = false;
+            if (tab !== "mashups") return;
+            if (mashups.loading) return;
+            if ($("#mashup-detail") && !$("#mashup-detail").hidden) return;
+            const nearBottom = main.scrollTop + main.clientHeight >= main.scrollHeight - 200;
+            if (nearBottom && mashups.items.length < mashups.total) {
+              mashups.offset = mashups.items.length;
+              loadMashups(false);
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

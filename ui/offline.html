@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Melty</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #141414; color: #f2f2f2;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+      section { width: min(440px, calc(100vw - 48px)); display: grid; justify-items: center; text-align: center; gap: 14px; }
+      img { width: 180px; height: auto; margin-bottom: 8px; }
+      h1 { margin: 0; font-size: 20px; font-weight: 650; letter-spacing: -0.01em; }
+      p { margin: 0; color: #a6a6a6; font-size: 14px; line-height: 1.5; }
+      a { margin-top: 8px; display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border-radius: 999px;
+        background: #008cfd; color: #fff; font-size: 14px; font-weight: 650; text-decoration: none; }
+      a:hover { background: #1f98ff; }
+    </style>
+  </head>
+  <body>
+    <section>
+      <img src="wordmark.png" alt="Melty" draggable="false" />
+      <h1>Can't reach Melty</h1>
+      <p>Check your internet connection. Melty will try again automatically.</p>
+      <a href="melty://desktop/retry">Try again</a>
+    </section>
+    <script>setTimeout(() => { location.href = "melty://desktop/retry"; }, 5000);</script>
+  </body>
+</html>

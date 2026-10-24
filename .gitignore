@@ -1,0 +1,52 @@
+# Rust build artifacts
+target/
+**/target/
+
+# Tauri generated files
+src-tauri/gen/
+
+# Cargo
+Cargo.lock
+!.gitignore
+
+# Node/npm (if used)
+node_modules/
+dist/
+build/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+
+# Test outputs
+*.profraw
+
+# App data / local caches
+*.json.bak
+.cache/
+
+# Packaging artifacts
+*.AppImage
+*.deb
+*.rpm
+*.msi
+*.exe
+*.nsis
+
+# Misc
+*.tmp
+*.bak
+*~

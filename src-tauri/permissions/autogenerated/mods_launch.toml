@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-mods-launch"
+description = "Enables the mods_launch command without any pre-configured scope."
+commands.allow = ["mods_launch"]
+
+[[permission]]
+identifier = "deny-mods-launch"
+description = "Denies the mods_launch command without any pre-configured scope."
+commands.deny = ["mods_launch"]

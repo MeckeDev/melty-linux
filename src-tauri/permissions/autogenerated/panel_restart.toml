@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-panel-restart"
+description = "Enables the panel_restart command without any pre-configured scope."
+commands.allow = ["panel_restart"]
+
+[[permission]]
+identifier = "deny-panel-restart"
+description = "Denies the panel_restart command without any pre-configured scope."
+commands.deny = ["panel_restart"]

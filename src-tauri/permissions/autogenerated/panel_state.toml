@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-panel-state"
+description = "Enables the panel_state command without any pre-configured scope."
+commands.allow = ["panel_state"]
+
+[[permission]]
+identifier = "deny-panel-state"
+description = "Denies the panel_state command without any pre-configured scope."
+commands.deny = ["panel_state"]
