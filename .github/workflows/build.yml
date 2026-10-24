@@ -20,9 +20,9 @@ jobs:
       matrix:
         include:
           - platform: 'ubuntu-22.04'
-            args: ''
+            args: '--bundles deb,rpm,appimage'
           - platform: 'windows-latest'
-            args: ''
+            args: '--bundles nsis,msi'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -75,7 +75,21 @@ jobs:
         with:
           tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
           releaseName: ${{ startsWith(github.ref, 'refs/tags/') && format('Melty-Linux {0}', github.ref_name) || '' }}
-          releaseBody: 'See the assets below to download and install this version.'
-          releaseDraft: true
+          releaseBody: |
+            Native, cross-platform client for [melty.gg](https://melty.gg) (unofficial community project).
+
+            ## Downloads
+
+            **Linux**
+            - `.AppImage` — universal, no installation required (`chmod +x *.AppImage`)
+            - `.deb` — Debian/Ubuntu: `sudo dpkg -i melty-linux_*.deb`
+            - `.rpm` — Fedora/RHEL/openSUSE: `sudo rpm -i melty-linux-*.rpm`
+
+            **Windows**
+            - `.exe` (NSIS installer) — recommended
+            - `.msi` — Windows Installer package
+
+            See the [README](https://github.com/MeckeDev/melty-linux#readme) for prerequisites and troubleshooting.
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
