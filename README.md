@@ -4,6 +4,20 @@ A native, cross-platform client for [melty.gg](https://melty.gg) built with [Tau
 
 **Note:** This is an unofficial community project and is not affiliated with Melty. No code from the official Windows client has been included — this is a clean reimplementation based on the melty.gg web interface.
 
+## Screenshots
+
+| Library | Mashup Browser |
+| --- | --- |
+| ![Library](screenshots/library.png) | ![Mashup Browser](screenshots/mashup-browser.png) |
+
+| Mashup Details | Installed |
+| --- | --- |
+| ![Mashup Details](screenshots/mashup-details.png) | ![Installed](screenshots/installed.png) |
+
+| Settings | Diagnostics |
+| --- | --- |
+| ![Settings](screenshots/settings.png) | ![Diagnostics](screenshots/diagnostics.png) |
+
 ## Features
 
 - **Native panel UI** — Library, Mashups, Installed, Settings and Diagnostics in one native window (no embedded website main window).
