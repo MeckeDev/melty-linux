@@ -4,36 +4,29 @@ A native, cross-platform client for [melty.gg](https://melty.gg) built with [Tau
 
 **Note:** This is an unofficial community project and is not affiliated with Melty. No code from the official Windows client has been included — this is a clean reimplementation based on the melty.gg web interface.
 
-## Demo
-
-[![Melty-Linux Demo](screenshots/library.png)](screenshots/melty.webm)
-
-[Download/Watch Demo Video](screenshots/melty.webm)
-
 ## Screenshots
 
-<details>
-<summary><b>Click to expand screenshots</b></summary>
+![Melty-Linux demo](screenshots/demo-preview.gif)
+
+[Open full demo video (MP4)](screenshots/melty-demo.mp4)
 
 ### Library
-[![Library](screenshots/library.png)](screenshots/library.png)
+[![Library](screenshots/library.jpg)](screenshots/library.jpg)
 
 ### Mashup Browser
-[![Mashup Browser](screenshots/mashup-browser.png)](screenshots/mashup-browser.png)
+[![Mashup Browser](screenshots/mashup-browser.jpg)](screenshots/mashup-browser.jpg)
 
 ### Mashup Details
-[![Mashup Details](screenshots/mashup-details.png)](screenshots/mashup-details.png)
+[![Mashup Details](screenshots/mashup-details.jpg)](screenshots/mashup-details.jpg)
 
 ### Installed
-[![Installed](screenshots/installed.png)](screenshots/installed.png)
+[![Installed](screenshots/installed.jpg)](screenshots/installed.jpg)
 
 ### Settings
-[![Settings](screenshots/settings.png)](screenshots/settings.png)
+[![Settings](screenshots/settings.jpg)](screenshots/settings.jpg)
 
 ### Diagnostics
-[![Diagnostics](screenshots/diagnostics.png)](screenshots/diagnostics.png)
-
-</details>
+[![Diagnostics](screenshots/diagnostics.jpg)](screenshots/diagnostics.jpg)
 
 ## Features
 
