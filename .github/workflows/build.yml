@@ -1,14 +1,8 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
-  pull_request:
-    branches:
-      - main
+  # Automatic triggers are disabled while GitHub Actions is unavailable for this
+  # account (billing lock). Re-enable `push`/`pull_request` once it is resolved.
   workflow_dispatch:
 
 jobs:
@@ -22,7 +16,7 @@ jobs:
           - platform: 'ubuntu-22.04'
             args: '--bundles deb,rpm,appimage'
           - platform: 'windows-latest'
-            args: '--bundles nsis,msi'
+            args: '--bundles nsis'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -87,7 +81,7 @@ jobs:
 
             **Windows**
             - `.exe` (NSIS installer) — recommended
-            - `.msi` — Windows Installer package
+            - `.zip` (portable) — extract and run `melty-linux.exe` (keep `WebView2Loader.dll` next to it)
 
             See the [README](https://github.com/MeckeDev/melty-linux#readme) for prerequisites and troubleshooting.
           releaseDraft: false
