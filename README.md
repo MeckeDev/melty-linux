@@ -4,6 +4,12 @@ A native, cross-platform client for [melty.gg](https://melty.gg) built with [Tau
 
 **Note:** This is an unofficial community project and is not affiliated with Melty. No code from the official Windows client has been included — this is a clean reimplementation based on the melty.gg web interface.
 
+## Demo
+
+[![Melty-Linux Demo](screenshots/library.png)](screenshots/melty.webm)
+
+[Download/Watch Demo Video](screenshots/melty.webm)
+
 ## Screenshots
 
 <details>
