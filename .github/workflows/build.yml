@@ -46,6 +46,9 @@ jobs:
             libxdo-dev \
             libxcb-shape0-dev \
             libxcb-xfixes0-dev \
+            patchelf \
+            libfuse2 \
+            desktop-file-utils \
             p7zip-full \
             unrar \
             libarchive-tools
