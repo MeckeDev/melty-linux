@@ -788,6 +788,7 @@ pub async fn mods_pick_game_folder(
         .map_err(|error| error.to_string())?
 }
 
+#[cfg(unix)]
 fn pick_game_folder(app: &AppHandle, start: Option<String>, home: &Path) -> Result<Option<String>, String> {
     use gtk::prelude::*;
     use std::sync::mpsc;
@@ -826,6 +827,31 @@ fn pick_game_folder(app: &AppHandle, start: Option<String>, home: &Path) -> Resu
     receiver
         .recv_timeout(Duration::from_secs(600))
         .map_err(|_| "Der Ordnerdialog wurde nicht geschlossen.".to_string())?
+}
+
+#[cfg(windows)]
+fn pick_game_folder(_app: &AppHandle, start: Option<String>, home: &Path) -> Result<Option<String>, String> {
+    let start = start.map(PathBuf::from).unwrap_or_else(|| home.to_path_buf());
+    let escaped = start.to_string_lossy().replace('\'', "''");
+    let script = format!(
+        "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; \
+         Add-Type -AssemblyName System.Windows.Forms; \
+         $dialog = New-Object System.Windows.Forms.FolderBrowserDialog; \
+         $dialog.SelectedPath = '{escaped}'; \
+         if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {{ Write-Output $dialog.SelectedPath }}"
+    );
+    let output = std::process::Command::new("powershell")
+        .args(["-NoProfile", "-STA", "-Command", &script])
+        .output()
+        .map_err(|error| format!("Konnte den Ordnerdialog nicht öffnen: {error}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "Der Ordnerdialog wurde mit Fehler beendet: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+    let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    Ok(if path.is_empty() { None } else { Some(path) })
 }
 
 #[tauri::command]

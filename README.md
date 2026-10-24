@@ -96,7 +96,8 @@ Download the latest release from [Releases](https://github.com/MeckeDev/melty-li
 #### Prebuilt packages
 Download the latest release from [Releases](https://github.com/MeckeDev/melty-linux/releases):
 - `.exe` (NSIS installer) — Recommended, installs to Program Files with Start Menu/desktop shortcuts
-- `.msi` — Windows Installer package for enterprise/system-wide installs
+- `.zip` (portable) — Extract and run `melty-linux.exe`; requires the Edge WebView2 Runtime (preinstalled on Windows 10/11)
+- `.msi` — Windows Installer package for enterprise/system-wide installs (produced by the Windows CI build)
 
 Run the installer and launch "Melty Linux Client" from the Start Menu.
 
@@ -143,9 +144,10 @@ sudo apt install mingw-w64 nsis  # Debian/Ubuntu
 # or
 sudo pacman -S mingw-w64-gcc nsis  # Arch
 
-cargo tauri build --target x86_64-pc-windows-gnu
+cargo tauri build --target x86_64-pc-windows-gnu --bundles nsis
 ```
-Outputs in `src-tauri/target/x86_64-pc-windows-gnu/release/bundle/` (`nsis/`, `msi/`).
+Outputs in `src-tauri/target/x86_64-pc-windows-gnu/release/bundle/nsis/`.
+Cross-compiled builds are unsigned, and MSI packaging requires a Windows host (or the Windows CI job).
 
 **Note:** Building all platforms from a single Linux machine isn't possible natively — for multi-platform releases, use a GitHub Actions matrix (Windows, Linux, macOS runners).
 

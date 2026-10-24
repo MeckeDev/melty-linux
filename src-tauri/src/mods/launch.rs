@@ -954,9 +954,15 @@ fn find_proton(home: &Path) -> Option<PathBuf> {
     candidates.into_iter().next()
 }
 
+#[cfg(unix)]
 fn is_executable(path: &Path) -> bool {
     use std::os::unix::fs::PermissionsExt;
     std::fs::metadata(path).map(|meta| meta.permissions().mode() & 0o111 != 0).unwrap_or(false)
+}
+
+#[cfg(not(unix))]
+fn is_executable(path: &Path) -> bool {
+    path.is_file()
 }
 
 fn proton_candidates(home: &Path) -> Vec<PathBuf> {
