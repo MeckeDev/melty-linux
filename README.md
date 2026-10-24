@@ -6,17 +6,28 @@ A native, cross-platform client for [melty.gg](https://melty.gg) built with [Tau
 
 ## Screenshots
 
-| Library | Mashup Browser |
-| --- | --- |
-| ![Library](screenshots/library.png) | ![Mashup Browser](screenshots/mashup-browser.png) |
+<details>
+<summary><b>Click to expand screenshots</b></summary>
 
-| Mashup Details | Installed |
-| --- | --- |
-| ![Mashup Details](screenshots/mashup-details.png) | ![Installed](screenshots/installed.png) |
+### Library
+[![Library](screenshots/library.png)](screenshots/library.png)
 
-| Settings | Diagnostics |
-| --- | --- |
-| ![Settings](screenshots/settings.png) | ![Diagnostics](screenshots/diagnostics.png) |
+### Mashup Browser
+[![Mashup Browser](screenshots/mashup-browser.png)](screenshots/mashup-browser.png)
+
+### Mashup Details
+[![Mashup Details](screenshots/mashup-details.png)](screenshots/mashup-details.png)
+
+### Installed
+[![Installed](screenshots/installed.png)](screenshots/installed.png)
+
+### Settings
+[![Settings](screenshots/settings.png)](screenshots/settings.png)
+
+### Diagnostics
+[![Diagnostics](screenshots/diagnostics.png)](screenshots/diagnostics.png)
+
+</details>
 
 ## Features
 
